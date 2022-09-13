@@ -1,6 +1,9 @@
 package com.example.comment.controller;
 
-import com.example.comment.entity.Comments;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.comment.entity.Comment;
 import com.example.comment.service.CommentService;
 import com.example.comment.tools.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
@@ -23,71 +25,76 @@ public class commentsController {
 
     }
 
-/*    @GetMapping(value = "/list")
-    public Result<?> queryPageList(MallShops mallShops,
-                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                   HttpServletRequest req) {
-        QueryWrapper<MallShops> queryWrapper = QueryGenerator.initQueryWrapper(mallShops, req.getParameterMap());
-        Page<MallShops> page = new Page<MallShops>(pageNo, pageSize);
-        IPage<MallShops> pageList = mallShopsService.page(page, queryWrapper);
+    /**
+     * 根据商品ID查询该商品对应的评论
+     * @param comment
+     * @param pageNo
+     * @param pageSize
+     * @param goodsId
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/list")
+    public Result<?> queryPageListByGoodId(Comment comment,
+                                           @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                           @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                           @RequestParam(name="goods_id",required=true) String goodsId,
+                                           HttpServletRequest req) {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id", goodsId);
+        Page<Comment> page = new Page<Comment>(pageNo, pageSize);
+        IPage<Comment> pageList = commentService.page(page, queryWrapper);
         return Result.OK(pageList);
     }
 
-    *//**
+    /**
      *   添加
      *
      * @param
      * @return
-     *//*
+     */
 
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody MallShops mallShops) {
-        mallShopsService.save(mallShops);
+    public Result<?> add(@RequestBody Comment comment) {
+        commentService.save(comment);
         return Result.OK("添加成功！");
     }
 
-    *//**
+    /**
      *  编辑
      *
-     * @param mallShops
+     * @param comment
      * @return
-     *//*
-    @AutoLog(value = "mall_shops-编辑")
-    @ApiOperation(value="mall_shops-编辑", notes="mall_shops-编辑")
+     */
     @PutMapping(value = "/edit")
-    public Result<?> edit(@RequestBody MallShops mallShops) {
-        mallShopsService.updateById(mallShops);
+    public Result<?> edit(@RequestBody Comment comment) {
+        commentService.updateById(comment);
         return Result.OK("编辑成功!");
     }
 
-    *//**
+    /**
      *   通过id删除
      *
      * @param id
      * @return
-     *//*
-    @AutoLog(value = "mall_shops-通过id删除")
-    @ApiOperation(value="mall_shops-通过id删除", notes="mall_shops-通过id删除")
+     */
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-        mallShopsService.removeById(id);
+        commentService.removeById(id);
         return Result.OK("删除成功!");
     }
 
-    *//**
+    /**
      *  批量删除
      *
      * @param ids
      * @return
-     *//*
-    @AutoLog(value = "mall_shops-批量删除")
-    @ApiOperation(value="mall_shops-批量删除", notes="mall_shops-批量删除")
+     */
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-        this.mallShopsService.removeByIds(Arrays.asList(ids.split(",")));
+        this.commentService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.OK("批量删除成功!");
-    }*/
+    }
 
     /**
      * 通过id查询
@@ -97,10 +104,10 @@ public class commentsController {
      */
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-        Comments comments = commentService.getById(id);
-        if(comments==null) {
+        Comment comment = commentService.getById(id);
+        if(comment ==null) {
             return Result.error("未找到对应数据");
         }
-        return Result.OK(comments);
+        return Result.OK(comment);
     }
 }
